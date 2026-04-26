@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR GEN - NazNotDev</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --glow: #00ff41;
+            --bg: #000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--glow);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Matrix Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(0, 20, 0, 0.9);
+            border: 1px solid var(--glow);
+            padding: 30px 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            text-align: center;
+        }
+
+        .header {
+            border-bottom: 2px solid var(--glow);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            font-size: 0.7rem;
+            display: block;
+            margin-bottom: 5px;
+            color: #0a0;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid #050;
+            color: var(--glow);
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        input:focus {
+            border-color: var(--glow);
+            box-shadow: 0 0 5px var(--glow);
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 12px;
+            background: var(--glow);
+            color: #000;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .btn-generate:active {
+            transform: scale(0.98);
+            background: #0a0;
+        }
+
+        /* QR Output Styling */
+        #qrcode {
+            margin: 25px auto;
+            padding: 15px;
+            background: #fff; /* QR harus background putih agar terbaca */
+            border: 5px solid var(--glow);
+            display: inline-block;
+            box-shadow: 0 0 15px var(--glow);
+        }
+
+        canvas, img {
+            max-width: 100%;
+        }
+
+        .status-log {
+            margin-top: 15px;
+            font-size: 0.7rem;
+            color: #060;
+            text-align: left;
+            height: 40px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>QR_GENERATOR</h2>
+        </div>
+
+        <div class="input-group">
+            <label>> ENTER_STRING_OR_URL</label>
+            <input type="text" id="text-input" placeholder="https://naznotdev.com" autocomplete="off">
+        </div>
+
+        <button class="btn-generate" onclick="generateQR()">Generate Payload</button>
+
+        <div id="qrcode"></div>
+
+        <div class="status-log" id="log">
+            [SYS]: Awaiting input...
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi QR Code
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width: 200,
+            height: 200,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
+        function generateQR() {
+            var input = document.getElementById("text-input");
+            var log = document.getElementById("log");
+            
+            if (input.value.trim() === "") {
+                log.innerHTML = "[ERR]: Input cannot be empty!";
+                log.style.color = "#f00";
+                return;
+            }
+
+            // Animasi Log
+            log.style.color = "#0f0";
+            log.innerHTML = "[PROC]: Encrypting data...<br>[SYS]: Generating QR Matrix...";
+
+            // Update QR Code
+            qrcode.clear();
+            qrcode.makeCode(input.value);
+
+            setTimeout(() => {
+                log.innerHTML += "<br>[SUCCESS]: QR Code Ready.";
+            }, 500);
+        }
+
+        // Hapus QR default saat pertama load jika tidak ingin kosong
+        document.querySelector("#qrcode img").style.display = "none";
+    </script>
+</body>
+</html>
